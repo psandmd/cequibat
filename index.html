@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8" />
-<title>Résonance</title>
+<title>Ce qui bat</title>
 
 <style>
   body {
@@ -13,10 +13,11 @@
     justify-content: center;
     align-items: center;
     height: 100vh;
+    gap: 40px;
   }
 
+  /* Panneau principal (interaction) */
   #container {
-    position: relative;
     width: 320px;
     height: 320px;
     border-radius: 50%;
@@ -28,23 +29,7 @@
     justify-content: center;
     align-items: center;
     color: white;
-    z-index: 3;
     text-align: center;
-  }
-
-  /* HALO BLANC EXTERNE */
-  #halo {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 460px;   /* halo visible dès BPM bas */
-    height: 460px;
-    border-radius: 50%;
-    background: rgba(255, 255, 255, 0.18);
-    filter: blur(22px);
-    transform: translate(-50%, -50%) scale(1);
-    pointer-events: none;
-    z-index: 1;
   }
 
   h2 {
@@ -77,17 +62,27 @@
   button:hover {
     background: #d62839;
   }
+
+  /* Cartel de présentation */
+  #cartel {
+    max-width: 360px;
+    background: rgba(0, 0, 0, 0.55);
+    backdrop-filter: blur(10px);
+    border: 2px solid rgba(255, 255, 255, 0.35);
+    padding: 20px 22px;
+    color: white;
+    font-size: 14px;
+    line-height: 1.5;
+  }
 </style>
 </head>
 
 <body>
 
+<!-- INTERACTION -->
 <div id="container">
-  <div id="halo"></div>
+  <h2>Ce qui bat</h2>
 
-  <h2>Résonance</h2>
-
-  <!-- BPM de 30 à 200 -->
   <input id="speedSlider" type="range" min="30" max="200" value="60" />
   <div id="bpmLabel">60 BPM</div>
 
@@ -95,14 +90,23 @@
   <button id="playBtn">▶ Jouer le son</button>
 </div>
 
+<!-- CARTEL TEXTE -->
+<div id="cartel">
+  <strong>Ce qui bat</strong><br><br>
+  Première recherche sonore autour du projet <em>Ce qui bat</em>.<br><br>
+  Installation sculpturale et sonore en milieu forestier, créée dans le cadre
+  de l’appel à candidature pour <em>Les Arpenteurs</em>.<br><br>
+  Festival porté par la communauté d’agglomération
+  <em>Cœur de Flandre</em>.
+</div>
+
 <script>
 const audio = document.getElementById("audio");
 const slider = document.getElementById("speedSlider");
 const bpmLabel = document.getElementById("bpmLabel");
-const halo = document.getElementById("halo");
 const playBtn = document.getElementById("playBtn");
 
-const AUDIO_BASE_BPM = 60; // Ableton = 60 BPM
+const AUDIO_BASE_BPM = 60;
 let playing = false;
 
 slider.addEventListener("input", () => {
@@ -116,41 +120,12 @@ playBtn.addEventListener("click", () => {
     audio.play();
     playing = true;
     playBtn.textContent = "⏹ Arrêter le son";
-    requestAnimationFrame(pulseHalo);
   } else {
     audio.pause();
     playing = false;
     playBtn.textContent = "▶ Jouer le son";
   }
 });
-
-function pulseHalo() {
-  if (!playing) return;
-
-  const bpm = Number(slider.value);
-
-  // 1 battement = 60 / BPM secondes
-  const beatDuration = 60 / bpm;
-  const phase = (audio.currentTime % beatDuration) / beatDuration;
-
-  // Intensité selon BPM (30 → 200)
-  const intensity = Math.min(1, Math.max(0, (bpm - 30) / (200 - 30)));
-
-  // Expansion halo (base visible → très large)
-  const minScale = 1.0;
-  const maxScale = 1.0 + 0.6 * intensity;
-
-  // Pulse naturel (pic sur le battement)
-  const pulse = Math.sin(Math.PI * phase);
-
-  const scale = minScale + (maxScale - minScale) * pulse;
-  halo.style.transform = `translate(-50%, -50%) scale(${scale})`;
-
-  // Opacité toujours visible
-  halo.style.opacity = 0.15 + 0.6 * intensity * pulse;
-
-  requestAnimationFrame(pulseHalo);
-}
 </script>
 
 </body>
