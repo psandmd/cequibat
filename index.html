@@ -8,38 +8,46 @@
   body {
     margin: 0;
     background: url('background.jpg') center/cover no-repeat fixed;
-    font-family: Arial, sans-serif;
+    font-family: Calibri, Candara, Segoe, "Segoe UI", Arial, sans-serif;
     display: flex;
     justify-content: center;
     align-items: center;
     height: 100vh;
-    gap: 40px;
   }
 
-  /* Panneau principal (interaction) */
-  #container {
+  #circle {
     width: 320px;
     height: 320px;
     border-radius: 50%;
-    background: rgba(0, 0, 0, 0.45);
+    background: rgba(0,0,0,0.45);
     backdrop-filter: blur(12px);
-    border: 3px solid rgba(255, 255, 255, 0.4);
+    border: 3px solid rgba(255,255,255,0.45);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transform: scale(1);
+  }
+
+  #circleContent {
+    width: 100%;
+    height: 100%;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
     color: white;
     text-align: center;
+    transform: scale(1);
   }
 
-  h2 {
-    margin-bottom: 15px;
+  #title {
+    font-size: 26px;
+    margin-bottom: 18px;
     font-weight: normal;
   }
 
   input[type="range"] {
     width: 220px;
-    margin-top: 10px;
   }
 
   #bpmLabel {
@@ -49,50 +57,64 @@
   }
 
   button {
-    margin-top: 18px;
+    margin-top: 16px;
     padding: 10px 20px;
     background: #e63946;
     border: none;
     color: white;
     border-radius: 10px;
     cursor: pointer;
-    font-size: 16px;
+    font-size: 15px;
   }
 
   button:hover {
     background: #d62839;
   }
 
-  /* Cartel de présentation */
   #cartel {
-    max-width: 360px;
-    background: rgba(0, 0, 0, 0.55);
+    position: fixed;
+    bottom: 28px;
+    left: 50%;
+    transform: translateX(-50%);
+    max-width: 520px;
+    background: rgba(0,0,0,0.55);
     backdrop-filter: blur(10px);
-    border: 2px solid rgba(255, 255, 255, 0.35);
-    padding: 20px 22px;
+    border: 2px solid rgba(255,255,255,0.35);
+    padding: 16px 22px;
     color: white;
-    font-size: 14px;
+    font-size: 13px;
     line-height: 1.5;
+    text-align: center;
+  }
+
+  #cartel-title {
+    font-size: 22px;
+    margin-bottom: 10px;
+    font-weight: normal;
   }
 </style>
 </head>
 
 <body>
 
-<!-- INTERACTION -->
-<div id="container">
-  <h2>Ce qui bat</h2>
+<div id="circle">
+  <div id="circleContent">
 
-  <input id="speedSlider" type="range" min="30" max="200" value="60" />
-  <div id="bpmLabel">60 BPM</div>
+    <div id="title">Ce qui bat</div>
 
-  <audio id="audio" src="coeur.mp3"></audio>
-  <button id="playBtn">▶ Jouer le son</button>
+    <!-- BPM limité à 180 -->
+    <input id="speedSlider" type="range" min="30" max="180" value="60" />
+    <div id="bpmLabel">60 BPM</div>
+
+    <audio id="audio" src="coeur.mp3"></audio>
+    <button id="playBtn">▶ Jouer le son</button>
+
+  </div>
 </div>
 
-<!-- CARTEL TEXTE -->
 <div id="cartel">
-  <strong>Ce qui bat</strong><br><br>
+  <div id="cartel-title">Ce qui bat</div>
+
   Première recherche sonore autour du projet <em>Ce qui bat</em>.<br><br>
   Installation sculpturale et sonore en milieu forestier, créée dans le cadre
   de l’appel à candidature pour <em>Les Arpenteurs</em>.<br><br>
@@ -105,27 +127,58 @@ const audio = document.getElementById("audio");
 const slider = document.getElementById("speedSlider");
 const bpmLabel = document.getElementById("bpmLabel");
 const playBtn = document.getElementById("playBtn");
+const circle = document.getElementById("circle");
+const content = document.getElementById("circleContent");
 
-const AUDIO_BASE_BPM = 60;
+const BASE_BPM = 60; // BPM réel du fichier Ableton
 let playing = false;
 
 slider.addEventListener("input", () => {
   const bpm = Number(slider.value);
   bpmLabel.textContent = bpm + " BPM";
-  audio.playbackRate = bpm / AUDIO_BASE_BPM;
+  audio.playbackRate = bpm / BASE_BPM;
 });
 
 playBtn.addEventListener("click", () => {
   if (!playing) {
+    audio.currentTime = 0;
     audio.play();
     playing = true;
     playBtn.textContent = "⏹ Arrêter le son";
+    requestAnimationFrame(pulse);
   } else {
     audio.pause();
     playing = false;
     playBtn.textContent = "▶ Jouer le son";
+    circle.style.transform = "scale(1)";
+    content.style.transform = "scale(1)";
   }
 });
+
+function pulse() {
+  if (!playing) return;
+
+  // 🔑 battement basé UNIQUEMENT sur 60 BPM
+  const beatDuration = 60 / BASE_BPM; // = 1 seconde
+  const phase = (audio.currentTime % beatDuration) / beatDuration;
+
+  const bpm = Number(slider.value);
+  const intensity = Math.min(1, Math.max(0.3, (bpm - 30) / 150));
+
+  let pulseValue;
+  if (phase < 0.15) {
+    pulseValue = phase / 0.15;
+  } else {
+    pulseValue = Math.max(0, 1 - (phase - 0.15) / 0.85);
+  }
+
+  const scale = 1 + pulseValue * 0.14 * intensity;
+
+  circle.style.transform = `scale(${scale})`;
+  content.style.transform = `scale(${1 / scale})`;
+
+  requestAnimationFrame(pulse);
+}
 </script>
 
 </body>
