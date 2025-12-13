@@ -15,6 +15,7 @@
     height: 100vh;
   }
 
+  /* ===== CERCLE ===== */
   #circle {
     width: 320px;
     height: 320px;
@@ -26,6 +27,7 @@
     justify-content: center;
     align-items: center;
     transform: scale(1);
+    margin-top: -20px; /* très léger, invisible mais efficace */
   }
 
   #circleContent {
@@ -71,38 +73,41 @@
     background: #d62839;
   }
 
+  /* ===== CARTEL FLOTTANT ===== */
   #cartel {
     position: fixed;
     bottom: 28px;
     left: 50%;
     transform: translateX(-50%);
-    max-width: 520px;
+    max-width: 420px;
     background: rgba(0,0,0,0.55);
     backdrop-filter: blur(10px);
     border: 2px solid rgba(255,255,255,0.35);
-    padding: 16px 22px;
+    padding: 18px 22px;
     color: white;
-    font-size: 13px;
-    line-height: 1.5;
-    text-align: center;
+    font-size: 14px;
+    line-height: 1.55;
+    text-align: left;
   }
 
-  #cartel-title {
-    font-size: 22px;
-    margin-bottom: 10px;
-    font-weight: normal;
+  #cartel p {
+    margin: 0 0 8px 0;
+  }
+
+  #cartel p:last-child {
+    margin-bottom: 0;
   }
 </style>
 </head>
 
 <body>
 
+<!-- ===== CERCLE CENTRAL ===== -->
 <div id="circle">
   <div id="circleContent">
 
     <div id="title">Ce qui bat</div>
 
-    <!-- BPM limité à 180 -->
     <input id="speedSlider" type="range" min="30" max="180" value="60" />
     <div id="bpmLabel">60 BPM</div>
 
@@ -112,14 +117,20 @@
   </div>
 </div>
 
+<!-- ===== CARTEL ===== -->
 <div id="cartel">
-  <div id="cartel-title">Ce qui bat</div>
+  <p>Première recherche sonore autour du projet <em>Ce qui bat</em>.</p>
 
-  Première recherche sonore autour du projet <em>Ce qui bat</em>.<br><br>
-  Installation sculpturale et sonore en milieu forestier, créée dans le cadre
-  de l’appel à candidature pour <em>Les Arpenteurs</em>.<br><br>
-  Festival porté par la communauté d’agglomération
-  <em>Cœur de Flandre</em>.
+  <p>
+    Installation sculpturale et sonore en milieu forestier,
+    créée dans le cadre de l’appel à candidature pour
+    <em>Les Arpenteurs</em>.
+  </p>
+
+  <p>
+    Festival porté par la communauté d’agglomération
+    <em>Cœur de Flandre</em>.
+  </p>
 </div>
 
 <script>
@@ -130,7 +141,7 @@ const playBtn = document.getElementById("playBtn");
 const circle = document.getElementById("circle");
 const content = document.getElementById("circleContent");
 
-const BASE_BPM = 60; // BPM réel du fichier Ableton
+const BASE_BPM = 60;
 let playing = false;
 
 slider.addEventListener("input", () => {
@@ -158,8 +169,7 @@ playBtn.addEventListener("click", () => {
 function pulse() {
   if (!playing) return;
 
-  // 🔑 battement basé UNIQUEMENT sur 60 BPM
-  const beatDuration = 60 / BASE_BPM; // = 1 seconde
+  const beatDuration = 1; // 60 BPM
   const phase = (audio.currentTime % beatDuration) / beatDuration;
 
   const bpm = Number(slider.value);
