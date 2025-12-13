@@ -27,7 +27,7 @@
     justify-content: center;
     align-items: center;
     transform: scale(1);
-    margin-top: -20px; /* très léger, invisible mais efficace */
+    margin-top: -20px;
   }
 
   #circleContent {
@@ -73,25 +73,24 @@
     background: #d62839;
   }
 
-  /* ===== CARTEL FLOTTANT ===== */
+  /* ===== CARTEL (PORTRAIT, BAS DROITE) ===== */
   #cartel {
     position: fixed;
     bottom: 28px;
-    left: 50%;
-    transform: translateX(-50%);
-    max-width: 420px;
+    right: 28px;
+    width: 300px;               /* 👈 plus étroit = portrait */
     background: rgba(0,0,0,0.55);
     backdrop-filter: blur(10px);
     border: 2px solid rgba(255,255,255,0.35);
-    padding: 18px 22px;
+    padding: 20px 22px;
     color: white;
     font-size: 14px;
-    line-height: 1.55;
+    line-height: 1.6;
     text-align: left;
   }
 
   #cartel p {
-    margin: 0 0 8px 0;
+    margin: 0 0 10px 0;
   }
 
   #cartel p:last-child {
@@ -122,7 +121,7 @@
   <p>Première recherche sonore autour du projet <em>Ce qui bat</em>.</p>
 
   <p>
-    Installation sculpturale et sonore en milieu forestier,
+    Proposition d’installation sculpturale et sonore en milieu forestier,
     créée dans le cadre de l’appel à candidature pour
     <em>Les Arpenteurs</em>.
   </p>
