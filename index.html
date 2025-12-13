@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<title>Résonance</title>
+
+<style>
+  body {
+    margin: 0;
+    background: url('Background.jpg') center/cover no-repeat fixed;
+    font-family: Arial, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+  }
+
+  #container {
+    position: relative;
+    width: 320px;
+    height: 320px;
+    border-radius: 50%;
+    background: rgba(0,0,0,0.45);
+    backdrop-filter: blur(12px);
+    border: 3px solid rgba(255,255,255,0.4);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    z-index: 3;
+  }
+
+  /* HALO BLANC EXTERNE */
+  #halo {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 460px;  /* base ≈ +2 cm */
+    height: 460px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.18);
+    filter: blur(22px);
+    transform: translate(-50%, -50%) scale(1);
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  input[type="range"] {
+    width: 220px;
+    z-index: 4;
+  }
+
+  button {
+    margin-top: 15px;
+    padding: 10px 20px;
+    background: #e63946;
+    border: none;
+    color: white;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 16px;
+    z-index: 4;
+  }
+</style>
+</head>
+
+<body>
+
+<div id="container">
+  <div id="halo"></div>
+
+  <h2>Résonance</h2>
+
+  <!-- BPM de 30 à 200 -->
+  <input id="speedSlider" type="range" min="30" max="200" value="60" />
+  <div id="bpmLabel">60 BPM</div>
+
+  <audio id="audio" src="Coeur.mp3"></audio>
+  <button id="playBtn">▶ Jouer le son</button>
+</div>
+
+<script>
+const audio = document.getElementById("audio");
+const slider = document.getElementById("speedSlider");
+const bpmLabel = document.getElementById("bpmLabel");
+const halo = document.getElementById("halo");
+const playBtn = document.getElementById("playBtn");
+
+const AUDIO_BASE_BPM = 60; // IMPORTANT : ton Ableton est à 60 BPM
+let playing = false;
+
+slider.addEventListener("input", () => {
+  const bpm = Number(slider.value);
+  bpmLabel.textContent = bpm + " BPM";
+
+  // Ajuste la vitesse de lecture par rapport à 60 BPM
+  audio.playbackRate = bpm / AUDIO_BASE_BPM;
+});
+
+playBtn.addEventListener("click", () => {
+  if (!playing) {
+    audio.play();
+    playing = true;
+    playBtn.textContent = "⏹ Arrêter le son";
+    requestAnimationFrame(pulseHalo);
+  } else {
+    audio.pause();
+    playing = false;
+    playBtn.textContent = "▶ Jouer le son";
+  }
+});
+
+function pulseHalo() {
+  if (!playing) return;
+
+  const bpm = Number(slider.value);
+
+  // Durée exacte d'un battement (en secondes)
+  const beatDuration = 60 / bpm;
+
+  // Phase dans le battement (0 → 1)
+  const phase = (audio.currentTime % beatDuration) / beatDuration;
+
+  // Intensité selon BPM (30 → 200)
+  const intensity = Math.min(1, Math.max(0, (bpm - 30) / (200 - 30)));
+
+  // Expansion halo (≈ 2 cm → 6 cm)
+  const minScale = 1.0;
+  const maxScale = 1.0 + 0.6 * intensity;
+
+  // Pulse sinus (pic au battement)
+  const pulse = Math.sin(Math.PI * phase);
+
+  const scale = minScale + (maxScale - minScale) * pulse;
+  halo.style.transform = `translate(-50%, -50%) scale(${scale})`;
+
+  // Opacité toujours visible
+  halo.style.opacity = 0.15 + 0.6 * intensity * pulse;
+
+  requestAnimationFrame(pulseHalo);
+}
+</script>
+
+</body>
+</html>
