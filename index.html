@@ -78,7 +78,7 @@
     position: fixed;
     bottom: 28px;
     right: 28px;
-    width: 300px;               /* 👈 plus étroit = portrait */
+    width: 300px;
     background: rgba(0,0,0,0.55);
     backdrop-filter: blur(10px);
     border: 2px solid rgba(255,255,255,0.35);
@@ -108,7 +108,7 @@
     <div id="title">Ce qui bat</div>
 
     <input id="speedSlider" type="range" min="30" max="180" value="60" />
-    <div id="bpmLabel">60 BPM</div>
+    <div id="bpmLabel">60 BPM (fréquence cardiaque)</div>
 
     <audio id="audio" src="coeur.mp3"></audio>
     <button id="playBtn">▶ Jouer le son</button>
@@ -145,7 +145,7 @@ let playing = false;
 
 slider.addEventListener("input", () => {
   const bpm = Number(slider.value);
-  bpmLabel.textContent = bpm + " BPM";
+  bpmLabel.textContent = bpm + " BPM (fréquence cardiaque)";
   audio.playbackRate = bpm / BASE_BPM;
 });
 
